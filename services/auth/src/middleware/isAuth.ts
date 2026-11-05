@@ -50,5 +50,18 @@ export const addUserRole = TryCatch(async (req, res) => {
     if (!user) {
         return res.status(404).json({ message: "User Not Found" })
     }
+    const accessToken = jwt.sign(
+        { userId: user._id, role: user.role, type: "access" },
+        process.env.ACCESS_TOKEN_SECRET as string,
+        { expiresIn: "15m" }
+    )
+    res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax" as const,
+        path: "/",
+        maxAge: 15 * 60 * 1000,
+    })
+
     res.json({ user })
 })

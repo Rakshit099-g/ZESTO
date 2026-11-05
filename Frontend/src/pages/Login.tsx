@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 
 import { FcGoogle } from "react-icons/fc";
-import api from "../services/api";
+import {authApi} from "../services/api";
 import { useAppData } from "../Context/AppContext";
 const Login = () => {
     const [loading, setLoading] = useState(false);
@@ -13,7 +13,7 @@ const Login = () => {
     const responseGoogle = async (authResult: any) => {
         setLoading(true)
         try {
-            const result = await api.post(
+            const result = await authApi.post(
                 "/api/auth/login",
                 {
                     code: authResult.code,

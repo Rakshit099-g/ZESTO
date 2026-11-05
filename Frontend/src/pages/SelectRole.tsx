@@ -1,7 +1,7 @@
 import {useState} from "react"
 import {useAppData} from "../Context/AppContext"
 import { useNavigate } from "react-router-dom"
-import api from "../services/api"
+import {authApi} from "../services/api"
 
 import { 
   BiUser, 
@@ -41,7 +41,7 @@ const SelectRole = () => {
 ];
     const addRole = async ()=>{
         try{
-            const {data} = await api.put("/api/auth/add/role",{role})
+            const {data} = await authApi.put("/api/auth/add/role",{role})
             console.log(data)
             setUser(data.user)
             navigate("/",{replace:true})

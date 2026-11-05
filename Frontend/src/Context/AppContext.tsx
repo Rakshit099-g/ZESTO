@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, type ReactNode, useContext } from "react";
-import api from "../services/api";
+import {authApi} from "../services/api";
 import type { AppContextType, LocationData, User } from "../types";
+import { Toaster } from "react-hot-toast";
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -18,7 +19,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
 
     async function fetchUser() {
         try {
-            const response = await api.get("/api/auth/me");
+            const response = await authApi.get("/api/auth/me");
             setUser(response.data);
             setIsAuth(true);
         } catch (error) {
@@ -105,9 +106,11 @@ export const AppProvider = ({ children }: AppProviderProps) => {
 }, []);
     return (
         <AppContext.Provider
-            value={{ isAuth, setLoading, setUser, user, loading, setIsAuth,city }}
+            value={{ isAuth, setLoading, setUser, user, loading, LoadingLocation, location, setIsAuth,city }}
         >
+
             {children}
+            <Toaster />
         </AppContext.Provider>
     );
 };

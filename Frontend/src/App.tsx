@@ -7,8 +7,12 @@ import { Toaster } from "react-hot-toast"
 import SelectRole from "./pages/SelectRole"
 import Navbar from "./components/Navbar"
 import Account from "./pages/Account"
+import { useAppData } from "./Context/AppContext"
+import Restaurant from "./pages/Restaurant"
 
 function App() {
+    const {user} = useAppData()
+    if(user && user.role==="seller") return <Restaurant/>
     return (
 
         <BrowserRouter>
@@ -24,7 +28,7 @@ function App() {
 
                 </Route>
             </Routes>
-            <Toaster />
+            
         </BrowserRouter>
     )
 }

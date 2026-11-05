@@ -1,43 +1,61 @@
-import axios from "axios";
-
+import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 
 const authService = import.meta.env.VITE_AUTH_SERVICE;
+const restaurantService = import.meta.env.VITE_RESTAURANT_SERVICE;
 
-const api = axios.create({
-  baseURL: authService,
-  withCredentials: true,
-});
+// Refresh hamesha auth service se hota hai (chahe request kisi bhi service ko gayi ho).
+// Ek time pe sirf ek refresh chalega, baaki requests usi ka wait karengi.
+let refreshPromise: Promise<unknown> | null = null;
 
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest.url?.includes("/api/auth/login") &&
-      !originalRequest.url?.includes("/api/auth/refresh")
-    ) {
-      originalRequest._retry = true;
-
-      try {
-        // Refresh request interceptor ko dobara trigger nahi karegi
-        await axios.post(
-          `${authService}/api/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
-
-        // Browser naye accessToken cookie ko automatically bhejega
-        return api(originalRequest);
-      } catch (refreshError) {
-        return Promise.reject(refreshError);
-      }
-    }
-
-    return Promise.reject(error);
+const refreshAccessToken = () => {
+  if (!refreshPromise) {
+    refreshPromise = axios
+      .post(`${authService}/api/auth/refresh`, {}, { withCredentials: true })
+      .finally(() => {
+        refreshPromise = null;
+      });
   }
-);
+  return refreshPromise;
+};
 
-export default api;
+type RetryConfig = InternalAxiosRequestConfig & { _retry?: boolean };
+
+const createApi = (baseURL: string) => {
+  const instance = axios.create({
+    baseURL,
+    withCredentials: true,
+  });
+
+  instance.interceptors.response.use(
+    (response) => response,
+    async (error: AxiosError) => {
+      const originalRequest = error.config as RetryConfig | undefined;
+
+      if (
+        error.response?.status === 401 &&
+        originalRequest &&
+        !originalRequest._retry &&
+        !originalRequest.url?.includes("/api/auth/login") &&
+        !originalRequest.url?.includes("/api/auth/refresh")
+      ) {
+        originalRequest._retry = true;
+
+        try {
+          await refreshAccessToken();
+          // Browser naya accessToken cookie khud bhejega, request usi instance se dobara
+          return instance(originalRequest);
+        } catch (refreshError) {
+          return Promise.reject(refreshError);
+        }
+      }
+
+      return Promise.reject(error);
+    }
+  );
+
+  return instance;
+};
+
+export const authApi = createApi(authService);
+export const restaurantApi = createApi(restaurantService);
+

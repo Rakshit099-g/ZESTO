@@ -2,16 +2,18 @@ import { useNavigate } from "react-router-dom";
 import { useAppData } from "../Context/AppContext";
 import { BiChevronRight, BiLogOut, BiMapPin, BiPackage } from "react-icons/bi";
 import toast from "react-hot-toast";
-import api from "../services/api";
+import {authApi} from "../services/api";
+import { useState } from "react";
 
 const Account = () => {
     const {user,setUser,setIsAuth} = useAppData()
+    const [imgError, setImgError] = useState(false);
     const navigate = useNavigate()
-    const firstLetter = user?.name.charAt(0).toUpperCase()
+    const firstLetter = user?.name?.charAt(0).toUpperCase()
 
     const logoutHandler = async ()=>{ 
       try{
-        await api.post("/api/auth/logout");
+        await authApi.post("/api/auth/logout");
         setUser(null)
         setIsAuth(false)
         toast.success("Logout Successfully")
@@ -39,15 +41,17 @@ const Account = () => {
           {/* Identity Card */}
           <div className="rounded-lg bg-white p-4 shadow-sm border border-gray-200 flex items-center gap-4">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#e23744] to-[#ff6b76] text-xl font-bold text-white shadow-sm overflow-hidden border border-gray-100">
-              {user?.image ? (
-                <img
-                  src={user.image}
-                  alt={`${user.name} Profile`}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                firstLetter
-              )}
+              {user?.image && !imgError ? (
+  <img
+    src={user.image}
+    alt={`${user.name} Profile`}
+    referrerPolicy="no-referrer"
+    onError={() => setImgError(true)}
+    className="h-full w-full object-cover"
+  />
+) : (
+  firstLetter
+)}
             </div>
             <div className="flex-1 overflow-hidden">
               <h2 className="text-lg font-bold text-gray-900 truncate leading-tight">
