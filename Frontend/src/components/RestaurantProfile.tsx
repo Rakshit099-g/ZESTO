@@ -3,8 +3,10 @@ import { BiEdit, BiMapPin, BiSave } from "react-icons/bi";
 import { HiOutlineLogout } from "react-icons/hi";
 import { MdOutlineRestaurant } from "react-icons/md";
 import type { IRestaurant } from "../types";
-import { restaurantApi } from "../services/api";
+import { restaurantApi,authApi } from "../services/api";
 import toast from "react-hot-toast";
+import { useAppData } from "../Context/AppContext";
+// import { useNavigate } from "react-router-dom";
 
 interface Props {
     restaurant: IRestaurant;
@@ -18,7 +20,8 @@ const RestaurantProfile = ({ restaurant, isSeller, onUpdate }: Props) => {
     const [name, setName] = useState(restaurant.name)
     const [description, setDescription] = useState(restaurant.description)
     const [loading, setLoading] = useState(false)
-
+    const {setUser,setIsAuth} = useAppData()
+    // const navigate = useNavigate()
     const toggleOpenStatus = async () => {
         try {
 
@@ -51,9 +54,16 @@ const RestaurantProfile = ({ restaurant, isSeller, onUpdate }: Props) => {
     }
 
 
-    const logoutHandler = async() => {
-        console.log("logoutHabdler")
-    }
+    const logoutHandler = async ()=>{ 
+          try{
+            await authApi.post("/api/auth/logout");
+            setUser(null)
+            setIsAuth(false)
+            toast.success("Logout Successfully")
+          }catch(error){
+            console.log(error)
+          }
+        }
 
     return (
         <div

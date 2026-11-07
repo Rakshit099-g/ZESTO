@@ -67,7 +67,7 @@ export const getAllItems = TryCatch(async (req: AuthenticatedRequest, res) => {
             message: "Id is required",
         });
     }
-    const items = await MenuItems.findOne({ restaurantId: id })
+    const items = await MenuItems.find({ restaurantId: id })
     res.json({ items })
 })
 export const deleteItems = TryCatch(async (req: AuthenticatedRequest, res) => {

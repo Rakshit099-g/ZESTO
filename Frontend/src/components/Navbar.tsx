@@ -5,31 +5,31 @@ import { useAppData } from "../Context/AppContext";
 import { useEffect, useState } from "react";
 
 const Navbar = () => {
-    const {isAuth,city} = useAppData()
-    const currLocation = useLocation()//it will provide the url  of current page
-    const [searchParams,setSearchParams] = useSearchParams()
-    const [search,setSearch] = useState<string>()
+  const { isAuth, city } = useAppData()
+  const currLocation = useLocation()//it will provide the url  of current page
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [search, setSearch] = useState<string>("")
 
-    const isHomePage = currLocation.pathname === "/"
+  const isHomePage = currLocation.pathname === "/"
+  const isLoginPage = currLocation.pathname === "/login"
 
-    const quantity:number = 5
+  const quantity: number = 5
 
-    useEffect(()=>{
-        const timer = setTimeout(()=>{
-            if(search){
-                setSearchParams(searchParams)
-            }
-            else{
-                setSearchParams({})
-            }
-            
-        },400)
-        //debouncing 
-        return ()=>{
-            clearTimeout(timer)
-        }
-    },[search,setSearch])
-    
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (search.trim()) {
+        setSearchParams({ search: search });
+      } else {
+        setSearchParams({});
+      }
+    }, 400);
+
+    return () => {
+      clearTimeout(timer);
+    };
+
+  }, [search, setSearchParams]);
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 font-sans backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
@@ -41,7 +41,7 @@ const Navbar = () => {
         </Link>
 
         <div className="flex items-center gap-3 sm:gap-5">
-          <Link
+          {isAuth && <Link
             to={"/cart"}
             className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 transition-all hover:bg-red-50 active:scale-95"
           >
@@ -51,8 +51,8 @@ const Navbar = () => {
                 {0}
               </span>
             )}
-          </Link>
-
+          </Link>     
+          }
           {isAuth ? (
             <Link
               to="/account"
@@ -83,9 +83,9 @@ const Navbar = () => {
             <div className="flex flex-1 items-center gap-2 px-4 py-2.5">
               <BiSearch className="h-[18px] w-[18px] text-slate-400" />
               <input type="text"
-              value={search}
-              onChange={(e)=>e.target.value}
-              className="w-full bg-transparent text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full bg-transparent text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none"
               />
             </div>
           </div>

@@ -10,14 +10,23 @@ const Restaurant = () => {
   const [restaurant, setRestaurant] = useState<IRestaurant | null>(null)
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState("menu");
-  const [menuItems,setMenuItems] = useState<IMenuItems[]>([])
+  const [menuItems, setMenuItems] = useState<IMenuItems[]>([])
 
-  const fetchMenuItems = async(restaurantId:string)=>{
-    try{
-      const {data} = await restaurantApi.get(`/api/item/all/${restaurantId}`)
-      setMenuItems(data)
+  const handleItemDelete = (itemId: string) => {
+    setMenuItems((prev) => prev.filter((item) => item._id !== itemId));
+  };
+
+  const handleAvailability = (itemId:string,isAvailable:boolean)=>{
+    setMenuItems((prev)=>
+      prev.map((i)=>(i._id===itemId?{...i,isAvailable}:i))
+    )
+  }
+  const fetchMenuItems = async (restaurantId: string) => {
+    try {
+      const { data } = await restaurantApi.get(`/api/item/all/${restaurantId}`)
+      setMenuItems(data.items)
     }
-    catch(error){
+    catch (error) {
       console.log(error)
     }
   }
@@ -38,10 +47,10 @@ const Restaurant = () => {
     fetchMyRestaurant()
   }, [])
 
-  useEffect(()=>{
+  useEffect(() => {
     if (!restaurant?._id) return;
     fetchMenuItems(restaurant?._id)
-  },[restaurant])
+  }, [restaurant])
 
   if (loading) return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4">
@@ -74,8 +83,8 @@ const Restaurant = () => {
                 key={t.key}
                 onClick={() => setTab(t.key)}
                 className={`flex-1 px-4 py-3 text-sm font-medium transition ${tab === t.key
-                    ? "border-b-2 border-red-500 text-red-500"
-                    : "text-gray-500 hover:text-gray-700"
+                  ? "border-b-2 border-red-500 text-red-500"
+                  : "text-gray-500 hover:text-gray-700"
                   }`}
               >
                 {t.label}
@@ -84,8 +93,8 @@ const Restaurant = () => {
           </div>
 
           <div className="p-4 md:p-6">
-            {tab === "menu" && <MenuItems items={menuItems} onItemDeleted={()=>fetchMenuItems(restaurant?._id)} isSeller={true}/>}
-            {tab === "add-item" && <AddMenuItems onItemAdded = {()=>fetchMenuItems(restaurant?._id)}/>}
+            {tab === "menu" && <MenuItems items={menuItems} onItemDelete={handleItemDelete} isSeller={true} onAvailabilityChange={handleAvailability} onAddToCart={()=>{}}/>}
+            {tab === "add-item" && <AddMenuItems onItemAdded={() => fetchMenuItems(restaurant?._id)} />}
             {tab === "sales" && <div>Sales component</div>}
           </div>
         </div>

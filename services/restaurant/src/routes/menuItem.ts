@@ -7,5 +7,5 @@ const router = express.Router();
 router.post('/new',isAuth,isSeller,uploadFile,addMenuItems)
 router.get('/all/:id',isAuth,getAllItems)
 router.delete('/:itemId',isAuth,isSeller,deleteItems)
-router.delete("/status/:itemId",isAuth,isSeller,toggleMenuItemAvailability)
+router.put("/status/:itemId",isAuth,isSeller,toggleMenuItemAvailability)
 export default router
