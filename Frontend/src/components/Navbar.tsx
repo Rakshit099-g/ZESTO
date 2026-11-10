@@ -5,15 +5,12 @@ import { useAppData } from "../Context/AppContext";
 import { useEffect, useState } from "react";
 
 const Navbar = () => {
-  const { isAuth, city } = useAppData()
+  const { isAuth, city, quantity } = useAppData()
   const currLocation = useLocation()//it will provide the url  of current page
   const [searchParams, setSearchParams] = useSearchParams()
   const [search, setSearch] = useState<string>("")
 
   const isHomePage = currLocation.pathname === "/"
-  const isLoginPage = currLocation.pathname === "/login"
-
-  const quantity: number = 5
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -48,10 +45,10 @@ const Navbar = () => {
             <CgShoppingCart className="h-5 w-5 text-slate-600 transition-colors group-hover:text-red-600" />
             {quantity > 0 && (
               <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-red-600 text-[10px] font-bold text-white shadow-sm">
-                {0}
+                {quantity}
               </span>
             )}
-          </Link>     
+          </Link>
           }
           {isAuth ? (
             <Link

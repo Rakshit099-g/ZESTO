@@ -15,15 +15,19 @@ export interface LocationData {
 }
 
 export interface AppContextType{
-    user:User | null,
-    loading:boolean,
-    location:string | null,
-    LoadingLocation:boolean,
-    isAuth:boolean,
-    setUser:Dispatch<SetStateAction<User | null>>
-    setLoading:Dispatch<SetStateAction<boolean>>
-    setIsAuth:Dispatch<SetStateAction<boolean>>
-    city:string
+    user:User | null;
+    loading:boolean;
+    isAuth: boolean;
+    setUser : React.Dispatch<React.SetStateAction<User | null>>;
+    setIsAuth :React.Dispatch<React.SetStateAction<boolean>>;
+    setLoading : React.Dispatch<React.SetStateAction<boolean>>;
+    location : LocationData | null;
+    LoadingLocation : boolean;
+    city : string;
+    cart : ICart[] | [];
+    fetchCart : ()=>Promise<void>;
+    subTotal : number;
+    quantity : number;
 
 }
 
@@ -54,4 +58,13 @@ export interface IMenuItems{
     isAvailable:boolean;
     createdAt : Date;
     updatedAt : Date;
+}
+
+export interface ICart extends Document{
+    userId : string;
+    restaurantId : string | IRestaurant;
+    itemId : string | IMenuItems;
+    quantity:number;
+    createdAt:Date;
+    updatedAt:Date;
 }

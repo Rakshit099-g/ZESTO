@@ -12,7 +12,7 @@ interface IMenuItem extends Document{
 }
 const schema =  new Schema<IMenuItem>({
      restaurantId : {
-        type : mongoose.Types.ObjectId,
+        type : mongoose.Schema.Types.ObjectId,
         ref:"Restaurant",
         required:true,
         index:true,

@@ -1,21 +1,22 @@
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import type { IMenuItems } from "../types";
 import { restaurantApi } from "../services/api";
 import toast from "react-hot-toast";
 import { BiCartAdd, BiHide, BiLoaderAlt, BiShow, BiTrash } from "react-icons/bi";
+import { useAppData } from "../Context/AppContext";
 
 
 interface CardProps {
   item: IMenuItems;
   isSeller: boolean;
   onItemDelete: (itemId: string) => void;
-  onAddToCart?: (item: IMenuItems) => void;
   onAvailabilityChange: (itemId: string, isAvailable: boolean) => void;
 }
-const MenuItemCard = ({ item, isSeller, onItemDelete, onAddToCart,onAvailabilityChange }: CardProps) => {
+const MenuItemCard = ({ item, isSeller, onItemDelete,onAvailabilityChange }: CardProps) => {
   const [available, setAvailable] = useState(item.isAvailable);
   const [imgError, setImgError] = useState(false);
   const [busy, setBusy] = useState<"toggle" | "delete" | null>(null);
+  const[loadingItemId,setLoadingItemId] = useState<string | null>(null);
  
   // parent ne naya data diya (refetch) toh local state sync kar do
 //   useEffect(() => {
@@ -54,10 +55,24 @@ const MenuItemCard = ({ item, isSeller, onItemDelete, onAddToCart,onAvailability
     }
   };
  
-  const addToCart = () => {
-    if (!available) return;
-    if (onAddToCart) onAddToCart(item);
-    else toast("Cart is coming soon");
+  const { fetchCart } = useAppData();
+  const addToCart = async (restaurantId: string, itemId: string) => {
+    try {
+      setLoadingItemId(itemId);
+
+      const { data } = await restaurantApi.post(
+        `/api/cart/add`,{
+          restaurantId,
+          itemId,
+        },
+      );
+      toast.success(data.message);
+      fetchCart();
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+    } finally {
+      setLoadingItemId(null);
+    }
   };
  
   return (
@@ -132,7 +147,7 @@ const MenuItemCard = ({ item, isSeller, onItemDelete, onAddToCart,onAvailability
           ) : (
             <button
               type="button"
-              onClick={addToCart}
+              onClick={()=>addToCart(item.restaurantId,item._id)}
               disabled={!available}
               className="flex items-center gap-1.5 rounded-md bg-[#e23744] px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-[#c92f3b] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500"
             >
