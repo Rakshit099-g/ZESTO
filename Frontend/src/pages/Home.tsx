@@ -12,27 +12,6 @@ const Home = () => {
   const { location } = useAppData()
   const [searchParams] = useSearchParams()
   const search = searchParams.get("search") || ""
-
-  const getDistanceKm = (
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number,
-  ): number => {
-    const R = 6371;
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon2 - lon1) * Math.PI) / 180;
-
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLon / 2) +
-      Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return +(R * c).toFixed(2);
-  };
   const fetchRestaurants = async () => {
     if (!location?.latitude || !location.longitude) {
       return
@@ -96,26 +75,21 @@ const Home = () => {
 
       {restaurants.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {restaurants.map((rest) => {
-            const [resLng, resLat] = rest.autoLocation.coordinates
-            const distance = getDistanceKm(
-              location.latitude,
-              location.longitude,
-              resLat,
-              resLng
-            )
-            return <RestaurantCard
+          {restaurants.map((rest) => (
+            <RestaurantCard
               key={rest._id}
               id={rest._id}
               name={rest.name}
               image={rest.image ?? ""}
-              distance={`${distance}`}
+              distance={
+                Number.isFinite(Number(rest.distanceKm))
+                  ? Number(rest.distanceKm).toFixed(2)
+                  : "N/A"
+              }
               isOpen={rest.isOpen}
-
             />
-          })
-          }
-        </div>) :(
+          ))}
+        </div>) : (
         <div className="flex min-h-[50vh] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 px-6 py-12 text-center transition-all hover:bg-slate-50">
           <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-slate-100">
             <FiMap className="h-8 w-8 text-slate-400" />

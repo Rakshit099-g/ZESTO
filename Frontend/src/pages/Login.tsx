@@ -37,7 +37,7 @@ const Login = () => {
     return (
         <div className="flex min-h-screen items-center justify-center bg-white px-4">
             <div className="w-full max-w-sm space-y-6">
-                <h1 className="text-center text-3xl font-bold text-[#E23774]">
+                <h1 className="text-center text-3xl font-bold  text-red-600">
                     Zesto
                 </h1>
 
