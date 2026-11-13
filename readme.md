@@ -5,9 +5,8 @@ ZESTO is a food delivery platform for **customers, restaurant owners
 a microservices-oriented backend. The current backend is split into
 Auth, Restaurant, and Utils services.
 
-> **Project status:** Work in progress. This README clearly separates
-> implemented features from ongoing work and planned infrastructure. Do
-> not treat the roadmap as completed functionality.
+> **Project status:** Work in progress. This README separates
+> implemented features from ongoing work and planned infrastructure.
 
 ------------------------------------------------------------------------
 
@@ -29,82 +28,33 @@ Auth, Restaurant, and Utils services.
 
 ## Screenshots
 
-Add your screenshots to `docs/screenshots/` in the repository, then
-replace the filenames below with your actual image filenames. GitHub
-will render these images on the repository homepage.
+Add your actual screenshots to `docs/screenshots/` and use these
+filenames.
 
-```{=html}
-<!-- SCREENSHOT PLACEHOLDER 1
-     Capture: Landing page / restaurant discovery page.
-     Show: ZESTO branding, location selection, restaurant cards and nearby results.
-     Save as: docs/screenshots/01-restaurant-discovery.png
--->
-```
 ### Restaurant Discovery
 
 ![Restaurant discovery
 page](docs/screenshots/01-restaurant-discovery.png)
 
-```{=html}
-<!-- SCREENSHOT PLACEHOLDER 2
-     Capture: Restaurant details and menu page.
-     Show: Restaurant information, menu items, prices and availability.
-     Save as: docs/screenshots/02-restaurant-menu.png
--->
-```
 ### Restaurant Menu
 
 ![Restaurant menu page](docs/screenshots/02-restaurant-menu.png)
 
-```{=html}
-<!-- SCREENSHOT PLACEHOLDER 3
-     Capture: Cart page.
-     Show: Selected items, quantities, subtotal and restaurant restriction if visible.
-     Save as: docs/screenshots/03-cart.png
--->
-```
 ### Shopping Cart
 
 ![Shopping cart](docs/screenshots/03-cart.png)
 
-```{=html}
-<!-- SCREENSHOT PLACEHOLDER 4
-     Capture: Address management / address selection page.
-     Show: Saved addresses and selected delivery address. Do not show personal phone numbers or exact home addresses in a public screenshot.
-     Save as: docs/screenshots/04-addresses.png
--->
-```
 ### Delivery Addresses
 
 ![Address management](docs/screenshots/04-addresses.png)
 
-```{=html}
-<!-- SCREENSHOT PLACEHOLDER 5
-     Capture: Seller dashboard.
-     Show: Restaurant management, open/close status, menu management or item availability controls.
-     Save as: docs/screenshots/05-seller-dashboard.png
--->
-```
 ### Seller Dashboard
 
 ![Seller dashboard](docs/screenshots/05-seller-dashboard.png)
 
-```{=html}
-<!-- SCREENSHOT PLACEHOLDER 6
-     Capture: Architecture diagram.
-     Show: React frontend, Auth Service, Restaurant Service, Utils Service, databases and Cloudinary. Mark RabbitMQ, Redis and Docker as planned/dashed components.
-     Save as: docs/screenshots/06-architecture.png
--->
-```
 ### System Architecture
 
 ![ZESTO architecture](docs/screenshots/06-architecture.png)
-
-> **Screenshot setup:** The image links above are intentional
-> placeholders. Until you add the matching image files, GitHub will show
-> broken-image icons. You can remove any section for a screen that is
-> not implemented yet. Avoid screenshots containing `.env` values, API
-> keys, tokens, private user details, or real payment information.
 
 ------------------------------------------------------------------------
 
@@ -115,8 +65,8 @@ page](docs/screenshots/01-restaurant-discovery.png)
 **Authentication and authorization** - Google OAuth 2.0 using the
 authorization-code flow. - JWT access and refresh tokens. - HTTP-only
 cookies for token delivery. - Refresh-token rotation, with refresh-token
-hashes stored in the Auth database. - Roles for customer, seller, and
-rider. - Protected routes using JWT verification and role/ownership
+hashes stored in the Auth database. - Customer, seller, and rider
+roles. - Protected routes using JWT verification and role/ownership
 middleware. - Axios-based refresh handling on the frontend.
 
 **Restaurant and menu management** - Create, edit, and retrieve
@@ -141,18 +91,15 @@ Service calls the Utils Service over HTTP for uploads.
 
 ### In Progress
 
--   **Order workflow:** Order creation and related checkout logic are
-    being developed in the Restaurant/Order domain. The work includes
-    validating the selected address, retrieving cart and restaurant
-    data, calculating delivery distance with `$geoNear`, calculating
-    fees, and creating an order with item/address snapshots.
--   **Payment workflow:** An internal Order Service endpoint is being
-    developed to return an order ID, amount, and currency to the Payment
-    Service after validating the internal service key and pending
-    payment status.
+-   **Order workflow:** Order creation and checkout logic, including
+    address validation, cart retrieval, distance calculation with
+    `$geoNear`, fee calculation, and order creation with item/address
+    snapshots.
+-   **Payment workflow:** Internal order lookup endpoint that returns
+    order ID, amount, and currency after validating the internal service
+    key and pending payment status.
 -   **Razorpay:** Test-mode integration, gateway order creation, payment
-    signature verification, and verified payment-status updates are not
-    yet represented as completed.
+    signature verification, and verified payment-status updates.
 -   **Customer checkout and rider delivery:** End-to-end flows are still
     being completed.
 
@@ -190,9 +137,8 @@ Service calls the Utils Service over HTTP for uploads.
                         Cart, Address, Order*
 ```
 
-`*` Order functionality is under development. The Order model and
-portions of the order/payment workflow should not be described as a
-complete production lifecycle.
+`*` Order functionality is under development and is not a complete
+production lifecycle.
 
 The Auth Service manages identity and token issuance. The Restaurant
 Service owns restaurant, menu, cart, address, and developing order
@@ -208,9 +154,9 @@ for every protected request.
      Restaurant / Order Service
                 |
              RabbitMQ
-       (planned event broker)
+        (planned event broker)
           /      |       \
-       Payment  Rider  Notifications
+      Payment   Rider   Notifications
        (planned services / workflows)
 
        Redis cache       Docker Compose
@@ -224,23 +170,37 @@ infrastructure.
 
 ## Technology Stack
 
-  Area                     Technologies
-  ------------------------ ------------------------------------------
-  Frontend                 React, TypeScript, Vite, Axios
-  Backend                  Node.js, Express.js, TypeScript
-  Database / ODM           MongoDB, Mongoose
-  Authentication           Google OAuth 2.0, JWT, HTTP-only cookies
-  Geospatial queries       GeoJSON, MongoDB `2dsphere`, `$geoNear`
-  Image storage            Cloudinary
-  Payment gateway          Razorpay --- integration in progress
-  Planned infrastructure   RabbitMQ, Redis, Docker
+  -----------------------------------------------------------------------
+  Category                Technologies            Status
+  ----------------------- ----------------------- -----------------------
+  Frontend                React, TypeScript,      Implemented
+                          Vite, Axios             
+
+  Backend                 Node.js, Express.js,    Implemented
+                          TypeScript              
+
+  Database / ODM          MongoDB, Mongoose       Implemented
+
+  Authentication          Google OAuth 2.0, JWT,  Implemented
+                          HTTP-only cookies       
+
+  Geospatial queries      GeoJSON, MongoDB        Implemented
+                          `2dsphere`, `$geoNear`  
+
+  Image storage           Cloudinary              Implemented
+
+  Payment gateway         Razorpay                In progress
+
+  Message broker          RabbitMQ                Planned
+
+  Caching                 Redis                   Planned
+
+  Containerization        Docker, Docker Compose  Planned
+  -----------------------------------------------------------------------
 
 ------------------------------------------------------------------------
 
 ## Repository Structure
-
-The repository is organized into a frontend and independently managed
-backend services. Exact filenames may evolve during development.
 
 ``` text
 ZESTO/
@@ -398,7 +358,7 @@ Environment variable names can change as services evolve. Use the names
 read by the current source code when creating local environment files.
 
   -----------------------------------------------------------------------
-  Service                             Configuration categories
+  Service                             Configuration required
   ----------------------------------- -----------------------------------
   Frontend                            Backend API base URL(s), such as
                                       the Vite API URL used by the Axios
@@ -417,28 +377,34 @@ read by the current source code when creating local environment files.
   Utils                               Port, Cloudinary cloud name, API
                                       key, API secret
 
-  Payment (when added)                Razorpay test/live key ID and
+  Payment (when integrated)           Razorpay test/live key ID and
                                       secret, stored only on the backend
   -----------------------------------------------------------------------
 
-**Security** - Never commit `.env` files, API keys, OAuth secrets, JWT
-secrets, database connection strings, or payment credentials. - Keep
-private credentials on the backend. Never expose server secrets through
-`VITE_` frontend variables. - Use separate credentials for local
-development and production. - Do not expose internal service keys in
-frontend code or public screenshots. - Redact personal addresses, phone
-numbers, tokens, and account details from screenshots.
+------------------------------------------------------------------------
+
+## Running the Project
+
+Run the frontend and each backend service in separate terminals. The
+exact scripts should be confirmed in each service's `package.json`.
+
+  Application / Service     Local port Start command
+  ----------------------- ------------ ---------------
+  Frontend                        5173 `npm run dev`
+  Auth Service                    5000 `npm run dev`
+  Restaurant Service              5001 `npm run dev`
+  Utils Service                   5002 `npm run dev`
 
 ------------------------------------------------------------------------
 
 ## API Overview
 
 This is a high-level route overview based on the current architecture
-notes. Confirm exact paths, methods, and request schemas in the source
-route files before using them.
+notes. Confirm exact paths, HTTP methods, and request schemas in the
+source route files before using them.
 
   -----------------------------------------------------------------------
-  Service                 Route group /           Purpose
+  Service / Module        Route group /           Purpose
                           operations              
   ----------------------- ----------------------- -----------------------
   Auth                    Login, refresh, logout, Authentication and role
@@ -449,7 +415,7 @@ route files before using them.
                           own restaurant, nearby  and discovery
                           list, single restaurant 
 
-  Menu items              Create, list by         Menu management
+  Menu Items              Create, list by         Menu management
                           restaurant, delete,     
                           availability status     
 
@@ -464,7 +430,7 @@ route files before using them.
 
   Order / Payment         Order creation and      Checkout and payment
                           internal payment lookup workflow
-                          are being developed     
+                          are under development   
   -----------------------------------------------------------------------
 
 ------------------------------------------------------------------------
